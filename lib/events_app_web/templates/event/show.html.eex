@@ -1,0 +1,14 @@
+<p>
+  <span><%= link "Edit", to: Routes.event_path(@conn, :edit, @event) %></span>
+  <span><%= link "Back", to: Routes.event_path(@conn, :index) %></span>
+</p>
+
+<h1>Events #<%= @event.id %></h1>
+
+<div>
+  <%= @event.name %>
+  <br>
+  <%= @event.date %>
+  <br>
+  <%= @event.description %>
+</div>
