@@ -1,5 +1,7 @@
 <p>
-  <span><%= link "Edit", to: Routes.event_path(@conn, :edit, @event) %></span>
+  <%= if current_user_id?(@conn, @event.user_id) do %>
+    <span><%= link "Edit", to: Routes.event_path(@conn, :edit, @event) %></span>
+  <% end %>
   <span><%= link "Back", to: Routes.event_path(@conn, :index) %></span>
 </p>
 
@@ -11,4 +13,63 @@
   <%= @event.date %>
   <br>
   <%= @event.description %>
+  <br>
+  <div>
+  <img src="<%= Routes.user_path(@conn, :photo, @event.user_id) %>" alt="">
+  </div>
 </div>
+
+<h2> Invite Friends </h2>
+<%= if current_user_id?(@conn, @event.user_id) do %>
+  <%= render(
+    EventsAppWeb.InviteView,
+    "form.html",
+    changeset: @new_invite,
+    action: Routes.invite_path(@conn, :create)
+  ) %>
+<% end %>
+
+<h2>Respond</h2>
+
+<%= if have_current_user?(@conn) do %>
+  <%= for response <- @event.responses do %>
+    <%= if response.user_id == current_user_id(@conn) do%>
+    <%=else%>
+      <%= render(
+        EventsAppWeb.ResponseView,
+        "form.html",
+        changeset: @new_response,
+        action: Routes.response_path(@conn, :create)
+      ) %>
+    <%=end%>
+  <%=end%>
+<% end %>
+
+<h2>Comments</h2>
+
+<%= for comm <- @event.comments do %>
+  <div class="card">
+    <div class="card-body">
+      <p>Posted by <%= comm.user.name %></p>
+      <p class="card-text"><%= comm.body %></p>
+      <%= if current_user_id?(@conn, comm.user_id) do %>
+        <span><%= link "Edit", to: Routes.comment_path(@conn, :edit, comm) %></span>
+        <span><%= link "Delete", to: Routes.comment_path(@conn, :delete, comm), method: :delete, data: [confirm: "Are you sure?"] %></span>
+      <%= end %>
+      <%= if current_user_id?(@conn, @event.user_id) do %>
+        <span><%= link "Delete", to: Routes.comment_path(@conn, :delete, comm), method: :delete, data: [confirm: "Are you sure?"] %></span>
+      <%= end %>
+    </div>
+  </div>
+<% end %>
+
+<h2>Add Comment</h2>
+
+<%= if have_current_user?(@conn) do %>
+  <%= render(
+    EventsAppWeb.CommentView,
+    "form.html",
+    changeset: @new_comment,
+    action: Routes.comment_path(@conn, :create)
+  ) %>
+<% end %>

@@ -3,6 +3,11 @@ defmodule EventsAppWeb.EventController do
 
   alias EventsApp.Events
   alias EventsApp.Events.Event
+  alias EventsAppWeb.Plugs
+  
+  plug Plugs.RequireUser when action in [:new, :edit, :create, :update]
+  plug :fetch_event when action in [:show, :edit, :update, :delete]
+  plug :require_owner when action in [:edit, :update, :delete]
 
   def index(conn, _params) do
     events = Events.list_events()
@@ -28,19 +33,57 @@ defmodule EventsAppWeb.EventController do
     end
   end
 
-  def show(conn, %{"id" => id}) do
+  def fetch_event(conn, _args) do
+    id = conn.params["id"]
     event = Events.get_event!(id)
-    render(conn, "show.html", event: event)
+    assign(conn, :event, event)
+  end
+
+  def require_owner(conn, _args) do
+    user = conn.assigns[:current_user]
+    event = conn.assigns[:event]
+
+    if user.id == event.user_id do
+      conn
+    else
+      conn
+      |> put_flash(:error, "That isn't yours.")
+      |> redirect(to: Routes.page_path(conn, :index))
+      |> halt()
+    end
+  end
+
+  def show(conn, %{"id" => id}) do
+    event = Events.load_comments(conn.assigns[:event])
+    |> Events.load_invites()
+    |> Events.load_responses()
+    comm = %EventsApp.Comments.Comment{
+      event_id: event.id,
+      user_id: current_user_id(conn),
+    }
+    invite = %EventsApp.InviteList.Invite{
+      event_id: event.id,
+      user_id: current_user_id(conn),
+    }
+    response = %EventsApp.Responses.Response{
+      event_id: event.id,
+      user_id: current_user_id(conn),
+    }
+    new_comment = EventsApp.Comments.change_comment(comm)
+    new_invite = EventsApp.InviteList.change_invite(invite)
+    new_response = EventsApp.Responses.change_response(response)
+    render(conn, "show.html", event: event, new_comment: new_comment,
+    new_response: new_response, new_invite: new_invite)
   end
 
   def edit(conn, %{"id" => id}) do
-    event = Events.get_event!(id)
+    event = conn.assigns[:event]
     changeset = Events.change_event(event)
     render(conn, "edit.html", event: event, changeset: changeset)
   end
 
   def update(conn, %{"id" => id, "event" => event_params}) do
-    event = Events.get_event!(id)
+    event = conn.assigns[:event]
 
     case Events.update_event(event, event_params) do
       {:ok, event} ->
@@ -54,7 +97,7 @@ defmodule EventsAppWeb.EventController do
   end
 
   def delete(conn, %{"id" => id}) do
-    event = Events.get_event!(id)
+    event = conn.assigns[:event]
     {:ok, _event} = Events.delete_event(event)
 
     conn

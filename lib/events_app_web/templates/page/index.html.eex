@@ -6,16 +6,20 @@
 
 <div class="row">
   <%= for event <- @events do %>
-    <div class="col-sm-4 card">
-      <!--
-      <img class="card-img-top" src="" alt="">
-      -->
-      <div class="card-body">
-        <p class="card-text"><%= event.name %></p>
-        <%= link "view", to: Routes.event_path(@conn, :show, event) %>
-      </div>
-    </div>
+    <%= for invite <- @invites do %>
+      <%= if event.id == invite.event_id and invite.body == get_email(@conn)
+          or event.user_id == current_user_id(@conn) do%>
+        <div class="col-sm-4 card">
+
+          <div class="card-body">
+            <p class="card-text"><%= event.name %></p>
+            <%= link "view", to: Routes.event_path(@conn, :show, event) %>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
   <% end %>
 </div>
-
-<span><%= link "New Event", to: Routes.event_path(@conn, :new) %></span>
+<%= if have_current_user?(@conn) do %>
+      <p><%= link "New Event", to: Routes.event_path(@conn, :new) %></p>
+<% end %>

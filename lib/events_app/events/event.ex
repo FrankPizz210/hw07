@@ -6,6 +6,9 @@ defmodule EventsApp.Events.Event do
     field :name, :string
     field :date, :string
     field :description, :string
+    has_many :comments, EventsApp.Comments.Comment
+    has_many :invites, EventsApp.InviteList.Invite
+    has_many :responses, EventsApp.Responses.Response
     belongs_to :user, EventsApp.Users.User
 
     timestamps()

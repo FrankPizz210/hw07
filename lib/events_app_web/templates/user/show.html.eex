@@ -11,6 +11,9 @@
     <strong>Email:</strong>
     <%= @user.email %>
   </li>
+  <div>
+  <img src="<%= Routes.user_path(@conn, :photo, @user) %>" alt="">
+  </div>
 
 </ul>
 

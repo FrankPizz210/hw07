@@ -1,9 +1,20 @@
-**Attributions**
+# EventsApp
 
-Boostrap Links
-https://stackoverflow.com/questions/39786390/how-to-add-a-datepicker-to-bootstrap-page
+To start your Phoenix server:
 
-Datepicker js
-https://stackoverflow.com/questions/18519746/how-to-use-bootstrap-datepicker
+  * Install dependencies with `mix deps.get`
+  * Create and migrate your database with `mix ecto.setup`
+  * Install Node.js dependencies with `npm install` inside the `assets` directory
+  * Start Phoenix endpoint with `mix phx.server`
 
-Includes code from and based on Prof Tuck's in-class PhotoBlog example.
+Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+
+Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+
+## Learn more
+
+  * Official website: https://www.phoenixframework.org/
+  * Guides: https://hexdocs.pm/phoenix/overview.html
+  * Docs: https://hexdocs.pm/phoenix
+  * Forum: https://elixirforum.com/c/phoenix-forum
+  * Source: https://github.com/phoenixframework/phoenix

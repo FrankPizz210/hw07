@@ -13,6 +13,18 @@ defmodule EventsApp.Events do
     |> Repo.preload(:user)
   end
 
+  def load_comments(%Event{} = event) do
+   Repo.preload(event, [comments: :user])
+  end
+
+  def load_invites(%Event{} = event) do
+    Repo.preload(event, [invites: :user])
+  end
+
+  def load_responses(%Event{} = event) do
+    Repo.preload(event, [responses: :user])
+  end
+
   @doc """
   Returns the list of events.
 
