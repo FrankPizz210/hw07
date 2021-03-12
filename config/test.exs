@@ -1,5 +1,8 @@
 use Mix.Config
 
+config :events_app, EventsApp.Endpoint,
+    env: "test"
+
 # Configure your database
 #
 # The MIX_TEST_PARTITION environment variable can be used
@@ -7,7 +10,7 @@ use Mix.Config
 # Run `mix help test` for more information.
 config :events_app, EventsApp.Repo,
   username: "events_app",
-  password: "iu1eed7cihuB",
+  password: "mah2Ien7dae4",
   database: "events_app_test#{System.get_env("MIX_TEST_PARTITION")}",
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
